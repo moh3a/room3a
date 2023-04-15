@@ -1,0 +1,237 @@
+---
+export interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<header id="nav">
+			<div class="nav--list">
+				<button id="members__button">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 18v1h-24v-1h24zm0-6v1h-24v-1h24zm0-6v1h-24v-1h24z" fill="#ede0e0"/><path d="M24 19h-24v-1h24v1zm0-6h-24v-1h24v1zm0-6h-24v-1h24v1z"/></svg>
+				</button>
+				<a href="/">
+					<h3 id="logo">
+						<img src="/logo.png" alt="Site Logo" />
+						<span>Mumble</span>
+					</h3>
+				</a>
+			</div>
+
+			<div id="nav__links">
+				<button id="chat__button">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" fill="#ede0e0" clip-rule="evenodd"><path d="M24 20h-3v4l-5.333-4h-7.667v-4h2v2h6.333l2.667 2v-2h3v-8.001h-2v-2h4v12.001zm-15.667-6l-5.333 4v-4h-3v-14.001l18 .001v14h-9.667zm-6.333-2h3v2l2.667-2h8.333v-10l-14-.001v10.001z"/></svg>
+				</button>
+				<a class="nav__link" href="/">
+					Lobby
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ede0e0" viewBox="0 0 24 24"><path d="M20 7.093v-5.093h-3v2.093l3 3zm4 5.907l-12-12-12 12h3v10h7v-5h4v5h7v-10h3zm-5 8h-3v-5h-8v5h-3v-10.26l7-6.912 7 6.99v10.182z"/></svg>
+				</a>
+				<a class="nav__link" id="create__room__btn" href="/lobby">
+					Create Room
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ede0e0" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6 13h-5v5h-2v-5h-5v-2h5v-5h2v5h5v2z"/></svg>
+				</a>
+			</div>
+		</header>
+		<slot />
+	</body>
+</html>
+<style is:global>
+	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+	* {
+		font-family: 'Poppins', sans-serif;
+	}
+
+	/* width */
+	::-webkit-scrollbar {
+		width: 7px;
+	}
+
+	/* Track */
+	::-webkit-scrollbar-track {
+		box-shadow: inset 0 0 5px grey;
+		border-radius: 10px;
+	}
+
+	/* Handle */
+	::-webkit-scrollbar-thumb {
+		background: #797a79;
+		border-radius: 10px;
+	}
+
+	/* Handle on hover */
+	::-webkit-scrollbar-thumb:hover {
+		background: #845695;
+	}
+
+	body {
+		background-color: #1a1a1a;
+		color: #fff;
+
+		font-size: 14px;
+		padding: 0;
+		margin: 0;
+		box-sizing: border-box;
+	}
+
+	p,
+	a {
+		font-weight: 300;
+	}
+
+	.avatar__md {
+		height: 40px;
+		width: 40px;
+		object-fit: cover;
+		border-radius: 50%;
+	}
+
+	.avatar__sm {
+		height: 30px;
+		width: 30px;
+		object-fit: cover;
+		border-radius: 50%;
+	}
+
+	#nav {
+		position: fixed;
+		top: 0;
+		width: 100%;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		border-bottom: 1px solid #000000;
+		background-color: #1a1a1a;
+		text-decoration: none;
+		padding: 16px 5%;
+		z-index: 999;
+	}
+
+	#logo {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		font-size: 22px;
+		font-weight: 700;
+		line-height: 0;
+		margin: 0;
+		color: #ebe0e0;
+	}
+
+	@media (max-width: 640px) {
+		#logo span {
+			display: none;
+		}
+	}
+
+	#logo img {
+		height: 42px;
+	}
+
+	#nav a {
+		text-decoration: none;
+	}
+
+	#nav__links {
+		display: flex;
+		align-items: center;
+		column-gap: 2em;
+	}
+
+	.nav__link {
+		color: #fff;
+		text-decoration: none;
+		transition: 1s;
+		border-bottom: 2px solid transparent;
+		transition: all 0.3s ease-in-out;
+		padding-bottom: 1px;
+	}
+
+	@media (max-width: 520px) {
+		#nav__links {
+			column-gap: 3em;
+		}
+	}
+
+	.nav__link:hover {
+		color: rgb(230, 228, 228);
+		text-decoration: none;
+		border-color: #845695;
+	}
+
+	#create__room__btn {
+		display: block;
+		background-color: #845695;
+		padding: 8px 24px;
+		font-size: 14px;
+		font-weight: 500;
+		border-radius: 5px;
+	}
+
+	#create__room__btn:hover {
+		background-color: #845695;
+	}
+
+	.nav--list {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	#members__button,
+	#chat__button {
+		display: none;
+		cursor: pointer;
+		background: transparent;
+		border: none;
+	}
+
+	#members__button:hover svg > path,
+	#chat__button:hover svg,
+	.nav__link:hover svg {
+		fill: #845695;
+	}
+
+	.nav__link svg {
+		width: 0;
+		height: 0;
+	}
+
+	@media (max-width: 640px) {
+		#members__button {
+			display: block;
+		}
+
+		.nav__link svg {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+		.nav__link,
+		#create__room__btn {
+			font-size: 0;
+			border: none;
+		}
+
+		#create__room__btn {
+			padding: 0;
+			background-color: transparent;
+			border-radius: 50%;
+		}
+
+		#create__room__btn:hover {
+			background-color: transparent;
+		}
+	}
+</style>
