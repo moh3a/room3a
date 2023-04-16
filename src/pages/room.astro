@@ -15,8 +15,8 @@ import Messages from "../components/room/Messages.astro";
       <Messages />
     </div>
   </main>
-  <script type="text/javascript" src="src/lib/AgoraRTC_N-4.17.0.js"></script>
-  <script type="text/javascript" src="src/lib/room_rtc.js"></script>
+  <!-- <script is:inline src="AgoraRTC_N-4.17.0.js"></script> -->
+  <script src="../scripts/room_rtc.ts"></script>
   <script>
     let messagesContainer = document.getElementById("messages");
     messagesContainer.scrollTop = messagesContainer.scrollHeight;

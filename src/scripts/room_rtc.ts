@@ -1,3 +1,5 @@
+import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng";
+
 const APP_ID = "d17ddcee8dd3465ab9f531033c2cd402"; // todo: replace with "<!-- AGORA_APP_ID -->"
 const token = null; // for agora in production mode
 
@@ -6,7 +8,7 @@ if (!uid) {
   uid = String(Math.round(Math.random() * 100000));
   sessionStorage.setItem("uid", uid);
 }
-let client;
+let client: IAgoraRTCClient;
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -44,7 +46,9 @@ const handleUserPublished = async (user, mediaType) => {
   remoteUsers[user.uid] = user;
   await client.subscribe(user, mediaType);
 
-  let player = document.getElementById(`user-container-${user.uid}`);
+  let player: HTMLElement | string = document.getElementById(
+    `user-container-${user.uid}`
+  );
   if (player === null) {
     player = `
     <div class="video__container" id="user-container-${user.uid}">
