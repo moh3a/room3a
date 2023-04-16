@@ -1,6 +1,6 @@
 .container {
   margin-top: 74px;
-  height: clac(100vh - 74px);
+  height: calc(100vh - 74px);
   width: 100%;
   position: relative;
 }
@@ -68,7 +68,7 @@
   background-color: #2aca3e;
 }
 
-.member_name{
+.member_name {
   font-size: 14px;
   line-height: 0;
 }
@@ -113,23 +113,20 @@
   color: #ede0e0;
 }
 
-.message__body__bot{
+.message__body__bot {
   padding: 0 20px;
   max-width: 900px;
   color: #bdbdbd;
 }
 
-
 .message__author {
   margin-right: 10px;
-  color: #2aca3e!important;
-
+  color: #2aca3e !important;
 }
 
 .message__author__bot {
   margin-right: 10px;
-  color: #a52aca!important;
-
+  color: #a52aca !important;
 }
 
 .message__text {
@@ -174,6 +171,49 @@
   height: 100%;
 }
 
+#stream__box {
+  background-color: #3f434a;
+  height: 60vh;
+  display: none;
+}
+
+#streams__container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+  margin-top: 25px;
+  margin-bottom: 225px;
+}
+
+.video__container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #b366f9;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  height: 250px;
+  width: 250px;
+}
+
+.video-player {
+  height: 100%;
+  width: 100%;
+}
+
+.video-player video {
+  border-radius: 50%;
+}
+
+@media (max-width: 1400px) {
+  .video__container {
+    height: 200px;
+    width: 200px;
+  }
+}
 
 @media (max-width: 1200px) {
   #members__container {
@@ -215,6 +255,11 @@
 
   #chat__button {
     display: block;
+  }
+
+  .video__container {
+    height: 100px;
+    width: 100px;
   }
 }
 
