@@ -1,6 +1,8 @@
 import AgoraRTC, {
   IAgoraRTCClient,
   IAgoraRTCRemoteUser,
+  IMicrophoneAudioTrack,
+  ICameraVideoTrack,
 } from "agora-rtc-sdk-ng";
 import {
   streamBoxElement,
@@ -24,7 +26,7 @@ const urlParams = new URLSearchParams(queryString);
 let ROOM_ID = urlParams.get("room");
 if (!ROOM_ID) ROOM_ID = "main"; // todo: change --- move user to login page
 
-let localTracks = [];
+let localTracks: [IMicrophoneAudioTrack, ICameraVideoTrack] | [] = [];
 let remoteUsers = {};
 
 const joinRoomInit = async () => {
@@ -37,7 +39,23 @@ const joinRoomInit = async () => {
 };
 
 const joinStream = async () => {
-  localTracks = await AgoraRTC.createMicrophoneAndCameraTracks();
+  localTracks = await AgoraRTC.createMicrophoneAndCameraTracks(
+    {},
+    {
+      encoderConfig: {
+        width: {
+          min: 640,
+          ideal: 1920,
+          max: 1920,
+        },
+        height: {
+          min: 480,
+          ideal: 1080,
+          max: 1080,
+        },
+      },
+    }
+  );
   let player = `
     <div class="video__container" id="user-container-${uid}">
       <div class="video-player" id="user-${uid}"></div>
@@ -107,5 +125,27 @@ const handleUserLeft = async (user: IAgoraRTCRemoteUser) => {
     }
   }
 };
+
+const cameraBtn = document.getElementById("camera-btn");
+cameraBtn.addEventListener("click", async () => {
+  if (localTracks[1].muted) {
+    await localTracks[1].setMuted(false);
+    cameraBtn.classList.add("active");
+  } else {
+    await localTracks[1].setMuted(true);
+    cameraBtn.classList.remove("active");
+  }
+});
+
+const micBtn = document.getElementById("mic-btn");
+micBtn.addEventListener("click", async () => {
+  if (localTracks[0].muted) {
+    await localTracks[0].setMuted(false);
+    micBtn.classList.add("active");
+  } else {
+    await localTracks[0].setMuted(true);
+    micBtn.classList.remove("active");
+  }
+});
 
 joinRoomInit();

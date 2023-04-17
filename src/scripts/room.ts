@@ -41,3 +41,18 @@ export const expandVideoFrame = (event: MouseEvent) => {
 for (let i = 0; i < videoFrames.length; i++) {
   videoFrames[i].addEventListener("click", expandVideoFrame);
 }
+
+const hideDisplayFrame = () => {
+  userIdInStreamBoxElement = null;
+  streamBoxElement.style.display = null;
+
+  let child = streamBoxElement.children[0];
+  document.getElementById("streams__container").appendChild(child);
+
+  for (let i = 0; i < videoFrames.length; i++) {
+    (videoFrames[i] as any).style.heigth = "300px";
+    (videoFrames[i] as any).style.width = "300px";
+  }
+};
+
+streamBoxElement.addEventListener("click", hideDisplayFrame);
