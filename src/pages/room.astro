@@ -15,26 +15,6 @@ import Messages from "../components/room/Messages.astro";
       <Messages />
     </div>
   </main>
-  <!-- <script is:inline src="AgoraRTC_N-4.17.0.js"></script> -->
+  <script src="../scripts/room.ts"></script>
   <script src="../scripts/room_rtc.ts"></script>
-  <script>
-    let messagesContainer = document.getElementById("messages");
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    const memberContainer = document.getElementById("members__container");
-    const memberButton = document.getElementById("members__button");
-    let activeMemberContainer = false;
-    memberButton.addEventListener("click", () => {
-      memberContainer.style.display = activeMemberContainer ? "none" : "block";
-      activeMemberContainer = !activeMemberContainer;
-    });
-
-    const chatContainer = document.getElementById("messages__container");
-    const chatButton = document.getElementById("chat__button");
-    let activeChatContainer = false;
-    chatButton.addEventListener("click", () => {
-      chatContainer.style.display = activeChatContainer ? "none" : "block";
-      activeChatContainer = !activeChatContainer;
-    });
-  </script>
 </Layout>

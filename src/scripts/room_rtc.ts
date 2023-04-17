@@ -1,4 +1,13 @@
-import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng";
+import AgoraRTC, {
+  IAgoraRTCClient,
+  IAgoraRTCRemoteUser,
+} from "agora-rtc-sdk-ng";
+import {
+  streamBoxElement,
+  expandVideoFrame,
+  userIdInStreamBoxElement,
+  videoFrames,
+} from "./room";
 
 const APP_ID = "d17ddcee8dd3465ab9f531033c2cd402"; // todo: replace with "<!-- AGORA_APP_ID -->"
 const token = null; // for agora in production mode
@@ -21,10 +30,10 @@ let remoteUsers = {};
 const joinRoomInit = async () => {
   client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
   await client.join(APP_ID, ROOM_ID, token, uid);
+  joinStream();
 
   client.on("user-published", handleUserPublished);
-
-  joinStream();
+  client.on("user-left", handleUserLeft);
 };
 
 const joinStream = async () => {
@@ -37,35 +46,65 @@ const joinStream = async () => {
   document
     .getElementById("streams__container")
     .insertAdjacentHTML("beforeend", player);
+  document
+    .getElementById(`user-container-${uid}`)
+    .addEventListener("click", expandVideoFrame);
 
   localTracks[1].play(`user-${uid}`);
   await client.publish([localTracks[0], localTracks[1]]);
 };
 
-const handleUserPublished = async (user, mediaType) => {
+const handleUserPublished = async (
+  user: IAgoraRTCRemoteUser,
+  mediaType: "audio" | "video"
+) => {
   remoteUsers[user.uid] = user;
   await client.subscribe(user, mediaType);
 
-  let player: HTMLElement | string = document.getElementById(
+  let player: HTMLElement = document.getElementById(
     `user-container-${user.uid}`
   );
   if (player === null) {
-    player = `
-    <div class="video__container" id="user-container-${user.uid}">
-      <div class="video-player" id="user-${user.uid}"></div>
-    </div>
-  `;
+    player = document.createElement("div");
+    player.id = `user-container-${user.uid}`;
+    player.className = "video__container";
+    player.innerHTML = `
+      <div class="video__container" id="user-container-${user.uid}">
+        <div class="video-player" id="user-${user.uid}"></div>
+      </div>
+    `;
     document
       .getElementById("streams__container")
-      .insertAdjacentHTML("beforeend", player);
+      .insertAdjacentElement("beforeend", player);
+    document
+      .getElementById(`user-container-${user.uid}`)
+      .addEventListener("click", expandVideoFrame);
   }
 
-  if (mediaType === "video") {
-    user.mediaTrack.play(`user-${user.uid}`);
+  if (streamBoxElement.style.display) {
+    player.style.height = "100px";
+    player.style.width = "100px";
   }
 
-  if (mediaType === "audio") {
-    user.mediaTrack.play();
+  if (mediaType === "video" && user.hasVideo) {
+    user.videoTrack.play(`user-${user.uid}`);
+  }
+
+  if (mediaType === "audio" && user.hasAudio) {
+    user.audioTrack.play();
+  }
+};
+
+const handleUserLeft = async (user: IAgoraRTCRemoteUser) => {
+  delete remoteUsers[user.uid];
+  document.getElementById(`user-container-${user.uid}`).remove();
+
+  if (userIdInStreamBoxElement === `user-container-${user.uid}`) {
+    streamBoxElement.style.display = null;
+    for (let i = 0; i < videoFrames.length; i++) {
+      (videoFrames[i] as any).style.heigth = "300px";
+      (videoFrames[i] as any).style.width = "300px";
+    }
   }
 };
 
