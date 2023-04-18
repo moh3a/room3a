@@ -18,6 +18,10 @@ chatButton.addEventListener("click", () => {
 });
 
 export let userIdInStreamBoxElement: string | null = null;
+export const setUserIdInStreamBoxElement = (userId: string) => {
+  userIdInStreamBoxElement = userId;
+};
+
 export const streamBoxElement = document.getElementById("stream__box");
 export const videoFrames = document.getElementsByClassName("video__container");
 

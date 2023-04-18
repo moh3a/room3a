@@ -4,22 +4,34 @@ import AgoraRTC, {
   IMicrophoneAudioTrack,
   ICameraVideoTrack,
 } from "agora-rtc-sdk-ng";
+import AgoraRTM, { RtmClient, RtmChannel } from "agora-rtm-sdk";
+
 import {
   streamBoxElement,
   expandVideoFrame,
   userIdInStreamBoxElement,
   videoFrames,
+  setUserIdInStreamBoxElement,
 } from "./room";
+import { handleMemberJoined } from "./room_rtm";
 
 const APP_ID = "d17ddcee8dd3465ab9f531033c2cd402"; // todo: replace with "<!-- AGORA_APP_ID -->"
 const token = null; // for agora in production mode
+
+let displayName = localStorage.getItem("display_name");
+if (!displayName) {
+  window.location = "/lobby" as any;
+}
 
 let uid = sessionStorage.getItem("uid");
 if (!uid) {
   uid = String(Math.round(Math.random() * 100000));
   sessionStorage.setItem("uid", uid);
 }
+
 let client: IAgoraRTCClient;
+let rtm_client: RtmClient;
+let channel: RtmChannel;
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
@@ -27,9 +39,21 @@ let ROOM_ID = urlParams.get("room");
 if (!ROOM_ID) ROOM_ID = "main"; // todo: change --- move user to login page
 
 let localTracks: [IMicrophoneAudioTrack, ICameraVideoTrack] | [] = [];
-let remoteUsers = {};
+let remoteUsers: Record<string, IAgoraRTCRemoteUser> = {};
+let localScreenTracks: any; // ILocalVideoTrack | [ILocalVideoTrack, ILocalAudioTrack]
+let sharingScreen = false;
+
+const streamsContainer = document.getElementById("streams__container");
 
 const joinRoomInit = async () => {
+  rtm_client = AgoraRTM.createInstance(APP_ID);
+  await rtm_client.login({ uid, token });
+
+  channel = rtm_client.createChannel(ROOM_ID);
+  await channel.join();
+
+  channel.on("MemberJoined", handleMemberJoined);
+
   client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
   await client.join(APP_ID, ROOM_ID, token, uid);
   joinStream();
@@ -38,32 +62,33 @@ const joinRoomInit = async () => {
   client.on("user-left", handleUserLeft);
 };
 
-const joinStream = async () => {
-  localTracks = await AgoraRTC.createMicrophoneAndCameraTracks(
-    {},
-    {
-      encoderConfig: {
-        width: {
-          min: 640,
-          ideal: 1920,
-          max: 1920,
-        },
-        height: {
-          min: 480,
-          ideal: 1080,
-          max: 1080,
-        },
-      },
-    }
-  );
-  let player = `
+const player = `
     <div class="video__container" id="user-container-${uid}">
       <div class="video-player" id="user-${uid}"></div>
     </div>
   `;
-  document
-    .getElementById("streams__container")
-    .insertAdjacentHTML("beforeend", player);
+
+const joinStream = async () => {
+  localTracks = await AgoraRTC
+    .createMicrophoneAndCameraTracks
+    // {},
+    // {
+    //   encoderConfig: {
+    //     width: {
+    //       min: 640,
+    //       ideal: 1920,
+    //       max: 1920,
+    //     },
+    //     height: {
+    //       min: 480,
+    //       ideal: 1080,
+    //       max: 1080,
+    //     },
+    //   },
+    // }
+    ();
+
+  streamsContainer.insertAdjacentHTML("beforeend", player);
   document
     .getElementById(`user-container-${uid}`)
     .addEventListener("click", expandVideoFrame);
@@ -91,9 +116,7 @@ const handleUserPublished = async (
         <div class="video-player" id="user-${user.uid}"></div>
       </div>
     `;
-    document
-      .getElementById("streams__container")
-      .insertAdjacentElement("beforeend", player);
+    streamsContainer.insertAdjacentElement("beforeend", player);
     document
       .getElementById(`user-container-${user.uid}`)
       .addEventListener("click", expandVideoFrame);
@@ -147,5 +170,50 @@ micBtn.addEventListener("click", async () => {
     micBtn.classList.remove("active");
   }
 });
+
+const screenBtn = document.getElementById("screen-btn");
+screenBtn.addEventListener("click", async () => {
+  if (!sharingScreen) {
+    screenBtn.classList.add("active");
+    cameraBtn.classList.remove("active");
+    cameraBtn.style.display = "none";
+    localScreenTracks = await AgoraRTC.createScreenVideoTrack({});
+    document.getElementById(`user-container-${uid}`).remove();
+    streamBoxElement.style.display = "block";
+    streamBoxElement.insertAdjacentHTML("beforeend", player);
+    document
+      .getElementById(`user-container-${uid}`)
+      .addEventListener("click", expandVideoFrame);
+    setUserIdInStreamBoxElement(`user-container-${uid}`);
+    localScreenTracks.play(`user-${uid}`);
+
+    await client.unpublish([localTracks[1]]);
+    await client.publish([localScreenTracks]);
+
+    for (let i = 0; i < videoFrames.length; i++) {
+      if (videoFrames[i].id !== userIdInStreamBoxElement) {
+        (videoFrames[i] as any).style.height = "100px";
+        (videoFrames[i] as any).style.width = "100px";
+      }
+    }
+  } else {
+    cameraBtn.style.display = "block";
+    document.getElementById(`user-container-${uid}`).remove();
+    await client.unpublish([localScreenTracks]);
+    await switchToCamera();
+  }
+
+  sharingScreen = !sharingScreen;
+});
+
+const switchToCamera = async () => {
+  streamBoxElement.insertAdjacentHTML("beforeend", player);
+  await localTracks[0].setMuted(true);
+  await localTracks[1].setMuted(true);
+  micBtn.classList.remove("active");
+  screenBtn.classList.remove("active");
+  localTracks[1].play(`user-${uid}`);
+  await client.publish([localTracks[1]]);
+};
 
 joinRoomInit();

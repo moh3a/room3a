@@ -1,17 +1,19 @@
 ---
-import '../styles/lobby.css';
+import "../styles/lobby.css";
 
 import Layout from "../layouts/Layout.astro";
 import LobbyForm from "../components/lobby/LobbyForm.astro";
 ---
-<Layout title="Lobby" pathname="/lobby">
-    <main id="room__lobby__container">
-        <div id="form__container">
-            <div id="form__container__header">
-                <p>👋 Create or Join Room</p>
-            </div>
 
-            <LobbyForm />
-        </div>
-    </main>
+<Layout title="Lobby" pathname="/lobby">
+  <main id="room__lobby__container">
+    <div id="form__container">
+      <div id="form__container__header">
+        <p>👋 Create or Join Room</p>
+      </div>
+
+      <LobbyForm />
+    </div>
+  </main>
+  <script src="../scripts/lobby.ts"></script>
 </Layout>
