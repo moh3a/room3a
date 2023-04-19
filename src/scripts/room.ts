@@ -54,7 +54,7 @@ const hideDisplayFrame = () => {
   document.getElementById("streams__container").appendChild(child);
 
   for (let i = 0; i < videoFrames.length; i++) {
-    (videoFrames[i] as any).style.heigth = "300px";
+    (videoFrames[i] as any).style.height = "300px";
     (videoFrames[i] as any).style.width = "300px";
   }
 };

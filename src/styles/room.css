@@ -300,7 +300,7 @@
   background-color: #1a1a1a60;
   padding: 1rem;
   left: 50%;
-  display: flex;
+  display: none;
   gap: 1rem;
   transform: translateX(-50%);
 }
@@ -331,4 +331,18 @@
 .stream__actions a:hover,
 .stream__actions button:hover {
   background-color: #845695;
+}
+
+#join-btn {
+  background-color: #845695;
+  font-size: 18px;
+  padding: 25px 50px;
+  border: none;
+  color: white;
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  border-radius: 8px;
+  transform: translateX(-50%);
+  cursor: pointer;
 }
