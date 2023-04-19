@@ -85,24 +85,23 @@ const joinStream = async () => {
     document.getElementsByClassName("stream__actions")[0] as HTMLElement
   ).style.display = "flex";
 
-  localTracks = await AgoraRTC
-    .createMicrophoneAndCameraTracks
-    // {},
-    // {
-    //   encoderConfig: {
-    //     width: {
-    //       min: 640,
-    //       ideal: 1920,
-    //       max: 1920,
-    //     },
-    //     height: {
-    //       min: 480,
-    //       ideal: 1080,
-    //       max: 1080,
-    //     },
-    //   },
-    // }
-    ();
+  localTracks = await AgoraRTC.createMicrophoneAndCameraTracks(
+    {},
+    {
+      encoderConfig: {
+        width: {
+          min: 640,
+          ideal: 1920,
+          max: 1920,
+        },
+        height: {
+          min: 480,
+          ideal: 1080,
+          max: 1080,
+        },
+      },
+    }
+  );
 
   streamsContainer.insertAdjacentHTML("beforeend", player);
   document
