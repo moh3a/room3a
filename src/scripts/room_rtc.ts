@@ -21,9 +21,7 @@ import {
   handleMemberJoined,
   handleMemberLeft,
 } from "./room_rtm";
-
-const APP_ID = "<!-- AGORA_APP_ID -->";
-const token = null; // for agora in production mode
+import { APP_ID, PROD_TOKEN } from "../consts";
 
 export let displayName = localStorage.getItem("display_name");
 if (!displayName) window.location = "/lobby" as any;
@@ -52,7 +50,7 @@ const streamsContainer = document.getElementById("streams__container");
 
 const joinRoomInit = async () => {
   rtm_client = AgoraRTM.createInstance(APP_ID);
-  await rtm_client.login({ uid, token });
+  await rtm_client.login({ uid, token: PROD_TOKEN });
   await rtm_client.addOrUpdateLocalUserAttributes({
     name: displayName,
   });
@@ -67,7 +65,7 @@ const joinRoomInit = async () => {
   addBotMessageToDOM(`Welcome to the room ${displayName}! 👋`);
 
   client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-  await client.join(APP_ID, ROOM_ID, token, uid);
+  await client.join(APP_ID, ROOM_ID, PROD_TOKEN, uid);
 
   client.on("user-published", handleUserPublished);
   client.on("user-left", handleUserLeft);
